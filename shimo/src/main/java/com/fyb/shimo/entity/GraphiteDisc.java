@@ -37,6 +37,11 @@ public class GraphiteDisc implements Serializable {
     private Integer code;
 
     /**
+     * 封装类型
+     */
+    private String fengZhuang;
+
+    /**
      * (启用1，报废0)
      */
     private Boolean isUsed;

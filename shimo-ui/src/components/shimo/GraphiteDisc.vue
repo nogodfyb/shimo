@@ -22,6 +22,7 @@
     <el-table :data="shimoList" border stripe height="650">
       <el-table-column type="index"></el-table-column>
       <el-table-column label="石墨盘编号" prop="code"></el-table-column>
+      <el-table-column label="封装类型" prop="fengZhuang"></el-table-column>
       <el-table-column label="是否启用">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.isUsed" @change="shimoStateChanged(scope.row)">
@@ -53,6 +54,16 @@
     <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px" >
       <el-form-item label="石墨盘编号" prop="code">
         <el-input v-model="addForm.code"></el-input>
+      </el-form-item>
+      <el-form-item label="封装类型" prop="fengZhuang">
+        <el-select v-model="addForm.fengZhuang" placeholder="请选择">
+          <el-option
+            v-for="item in productionOptions"
+            :key="item.productId"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-form-item>
     </el-form>
     <!--      底部区域-->
@@ -114,7 +125,8 @@ export default {
       dialogVisible: false,
       editDialogVisible: false,
       addForm: {
-        code: ''
+        code: '',
+        fengZhuang: ''
       },
       editForm: {},
       addFormRules: {
@@ -122,8 +134,15 @@ export default {
           { required: true, message: '请输入石墨盘编号', trigger: 'blur' },
           { validator: checkCode, trigger: 'blur' },
           { validator: checkCodeExist, trigger: 'blur' }
-        ]
-      }
+        ],
+        fengZhuang: [{ required: true, message: '请选择石墨盘封装类型', trigger: 'blur' }]
+      },
+      productionOptions: [
+        { productId: 1, label: 'SMB-FL', value: 'SMB-FL' },
+        { productId: 2, label: 'SOD323HE', value: 'SOD323HE' },
+        { productId: 3, label: 'SMA-FL', value: 'SMA-FL' },
+        { productId: 4, label: 'SOD123FL', value: 'SOD123FL' }
+      ]
     }
   },
   created () {
