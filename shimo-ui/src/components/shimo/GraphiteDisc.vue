@@ -1,0 +1,163 @@
+<template>
+<div>
+  <!-- 面包屑导航 -->
+  <el-breadcrumb separator-class="el-icon-arrow-right">
+    <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+    <el-breadcrumb-item>石墨盘管理</el-breadcrumb-item>
+    <el-breadcrumb-item>石墨盘列表</el-breadcrumb-item>
+  </el-breadcrumb>
+  <el-card>
+    <!-- 搜索与添加区域  -->
+    <el-row :gutter="20">
+      <el-col :span="8">
+        <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getShiMoList">
+          <el-button slot="append" icon="el-icon-search" @click="getShiMoList"></el-button>
+        </el-input>
+      </el-col>
+      <el-col :span="4">
+        <el-button type="primary" @click="dialogVisible=true">添加石墨盘</el-button>
+      </el-col>
+    </el-row>
+    <!-- 石墨盘列表区域 -->
+    <el-table :data="shimoList" border stripe height="650">
+      <el-table-column type="index"></el-table-column>
+      <el-table-column label="石墨盘编号" prop="code"></el-table-column>
+      <el-table-column label="是否启用">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.isUsed" @change="userStateChanged(scope.row)">
+          </el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column label="废弃原因" prop="abandonedReason"></el-table-column>
+      <el-table-column label="创建时间" prop="createdTime"></el-table-column>
+      <el-table-column label="废弃时间" prop="abandonedTime"></el-table-column>
+    </el-table>
+    <!--    分页区域-->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="queryInfo.pageNum"
+      :page-sizes="[3, 5, 10, 15]"
+      :page-size="queryInfo.pageSize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
+  </el-card>
+  <!--    添加用户的对话框-->
+  <el-dialog
+    title="添加石墨盘"
+    :visible.sync="dialogVisible"
+    width="50%" @close="addDialogClosed"
+  >
+    <!--      内容主体区域-->
+    <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px" >
+      <el-form-item label="石墨盘编号" prop="code">
+        <el-input v-model="addForm.code"></el-input>
+      </el-form-item>
+    </el-form>
+    <!--      底部区域-->
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary"  @click="addShimo">确 定</el-button>
+      </span>
+  </el-dialog>
+</div>
+</template>
+
+<script>
+export default {
+  data () {
+    // 验证编号的规则
+    const checkCode = (rule, value, cb) => {
+      // 验证编号的正则表达式
+      const regCode = /^[0-9]{1,4}$/
+      if (regCode.test(value)) {
+        return cb()
+      } else cb(new Error('请输入合法的编号:1-4位数字'))
+    }
+    // 验证编号是否已存在
+    const checkCodeExist = async (rule, value, cb) => {
+      const exist = await this.checkCodeExist(value)
+      if (!exist) {
+        return cb()
+      } else cb(new Error('石墨盘编号已存在，请重新输入新的编号！'))
+      console.log(exist)
+    }
+    return {
+      // 获取石墨列表的参数对象
+      queryInfo: {
+        // 当前的页数
+        pageNum: 1,
+        // 当前每页显示多少条数据
+        pageSize: 5
+      },
+      shimoList: [],
+      total: 0,
+      dialogVisible: false,
+      addForm: {
+        code: ''
+      },
+      addFormRules: {
+        code: [
+          { required: true, message: '请输入石墨盘编号', trigger: 'blur' },
+          { validator: checkCode, trigger: 'blur' },
+          { validator: checkCodeExist, trigger: 'blur' }
+        ]
+      }
+    }
+  },
+  created () {
+    this.getShiMoList()
+  },
+  methods: {
+    async getShiMoList () {
+      const { data: res } = await this.$http.get('graphite-disc/list', { params: this.queryInfo })
+      if (res.status !== 200) {
+        return this.$message.error('获取用户列表失败！')
+      }
+      this.shimoList = res.data.list
+      this.total = res.data.total
+      console.log(res)
+    },
+    async checkCodeExist (code) {
+      const { data: res } = await this.$http.get('graphite-disc/check', { params: { code: code } })
+      if (res.status === 200) {
+        return true
+      }
+      return false
+    },
+    handleSizeChange (newSize) {
+      this.queryInfo.pageSize = newSize
+      this.getShiMoList()
+    },
+    handleCurrentChange (newPage) {
+      this.queryInfo.pageNum = newPage
+      this.getShiMoList()
+    },
+    addDialogClosed () {
+      this.$refs.addFormRef.resetFields()
+    },
+    addShimo () {
+      this.$refs.addFormRef.validate(async (valid) => {
+        if (!valid) {
+          return false
+        }
+        // 可以发起添加石墨盘的网络请求
+        const { data: res } = await this.$http.post('graphite-disc/add', this.addForm)
+        if (res.status !== 200) {
+          return this.$message.error('添加石墨盘失败！')
+        }
+        this.$message.success('添加石墨盘成功！')
+        // 隐藏添加石墨盘的对话框
+        this.dialogVisible = false
+        // 重新获取石墨盘列表数据
+        this.getShiMoList()
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
