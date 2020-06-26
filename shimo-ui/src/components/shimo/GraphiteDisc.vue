@@ -24,7 +24,7 @@
       <el-table-column label="石墨盘编号" prop="code"></el-table-column>
       <el-table-column label="是否启用">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.isUsed" @change="userStateChanged(scope.row)">
+          <el-switch v-model="scope.row.isUsed" @change="shimoStateChanged(scope.row)">
           </el-switch>
         </template>
       </el-table-column>
@@ -43,7 +43,7 @@
       :total="total">
     </el-pagination>
   </el-card>
-  <!--    添加用户的对话框-->
+  <!--    添加石墨盘的对话框-->
   <el-dialog
     title="添加石墨盘"
     :visible.sync="dialogVisible"
@@ -59,6 +59,24 @@
     <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
     <el-button type="primary"  @click="addShimo">确 定</el-button>
+      </span>
+  </el-dialog>
+  <!--    修改石墨盘的对话框-->
+  <el-dialog
+    title="修改石墨盘"
+    :visible.sync="editDialogVisible"
+    width="50%" @close="editDialogClosed"
+  >
+    <!--      内容主体区域-->
+    <el-form :model="editForm"  ref="editFormRef" label-width="100px" >
+      <el-form-item label="废弃原因">
+        <el-input v-model="editForm.abandonedReason"></el-input>
+      </el-form-item>
+    </el-form>
+    <!--      底部区域-->
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="editDialogVisible = false">取 消</el-button>
+    <el-button type="primary"  @click="editShimo">确 定</el-button>
       </span>
   </el-dialog>
 </div>
@@ -94,9 +112,11 @@ export default {
       shimoList: [],
       total: 0,
       dialogVisible: false,
+      editDialogVisible: false,
       addForm: {
         code: ''
       },
+      editForm: {},
       addFormRules: {
         code: [
           { required: true, message: '请输入石墨盘编号', trigger: 'blur' },
@@ -153,6 +173,55 @@ export default {
         // 重新获取石墨盘列表数据
         this.getShiMoList()
       })
+    },
+    shimoStateChanged (shimo) {
+      if (shimo.isUsed) {
+        this.editForm = shimo
+        this.$confirm('此操作可将废弃的石墨盘恢复, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          // 可以发起修改石墨盘的网络请求
+          const { data: res } = await this.$http.post('graphite-disc/edit', this.editForm)
+          if (res.status !== 200) {
+            this.editForm.isUsed = !this.editForm.isUsed
+            return this.$message.error('恢复石墨盘状态失败！')
+          }
+          this.$message.success('修改石墨盘状态成功！石墨盘已恢复！')
+          // 隐藏修改石墨盘的对话框
+          this.editDialogVisible = false
+          // 重新获取石墨盘列表数据
+          await this.getShiMoList()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+          shimo.isUsed = !shimo.isUsed
+        })
+      } else {
+        this.editDialogVisible = true
+        this.editForm = shimo
+        console.log(shimo)
+      }
+    },
+    editDialogClosed () {
+      this.editForm.isUsed = !this.editForm.isUsed
+      this.$refs.editFormRef.resetFields()
+    },
+    async editShimo () {
+      // 可以发起添加石墨盘的网络请求
+      const { data: res } = await this.$http.post('graphite-disc/edit', this.editForm)
+      if (res.status !== 200) {
+        this.editForm.isUsed = !this.editForm.isUsed
+        return this.$message.error('修改石墨盘状态失败！')
+      }
+      this.$message.success('修改石墨盘状态成功！石墨盘已废弃！')
+      // 隐藏修改石墨盘的对话框
+      this.editDialogVisible = false
+      // 重新获取石墨盘列表数据
+      this.getShiMoList()
     }
   }
 }

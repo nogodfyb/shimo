@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 /**
  * <p>
  *  前端控制器
@@ -39,8 +41,25 @@ public class GraphiteDiscController {
 
     @PostMapping("/add")
     public CommonResult<Object> add(@RequestBody GraphiteDisc graphiteDisc){
+        graphiteDisc.setIsUsed(true);
+        graphiteDisc.setCreatedTime(LocalDateTime.now());
         boolean save = graphiteDiscService.save(graphiteDisc);
         if(save){
+            return CommonResult.success(null);
+        }
+        return CommonResult.failed();
+    }
+    @PostMapping("/edit")
+    public CommonResult<Object> edit(@RequestBody GraphiteDisc graphiteDisc){
+        //从启用状态到废弃状态
+        if(!graphiteDisc.getIsUsed()){
+            graphiteDisc.setAbandonedTime(LocalDateTime.now());
+        }else {
+            graphiteDisc.setAbandonedReason(null);
+            graphiteDisc.setAbandonedTime(null);
+        }
+        boolean update = graphiteDiscService.updateById(graphiteDisc);
+        if(update){
             return CommonResult.success(null);
         }
         return CommonResult.failed();

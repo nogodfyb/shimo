@@ -1,6 +1,8 @@
 package com.fyb.shimo.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
@@ -10,7 +12,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author fyb
@@ -42,6 +44,7 @@ public class GraphiteDisc implements Serializable {
     /**
      * 废弃原因
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String abandonedReason;
 
     /**
@@ -52,6 +55,7 @@ public class GraphiteDisc implements Serializable {
     /**
      * 废弃时间
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private LocalDateTime abandonedTime;
 
 
