@@ -10,6 +10,7 @@ import com.fyb.shimo.entity.GraphiteDisc;
 import com.fyb.shimo.service.IGraphiteDiscService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -31,10 +32,20 @@ public class GraphiteDiscController {
 
     @GetMapping("/list")
     public CommonResult<CommonPage<GraphiteDisc>> list(GraphiteDiscPageParam pageParam){
+        QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
+        if(pageParam.getCode()!=null){
+            graphiteDiscQueryWrapper.like("code",pageParam.getCode());
+        }
+        if(!StringUtils.isEmpty(pageParam.getFengZhuang())){
+            graphiteDiscQueryWrapper.eq("feng_zhuang",pageParam.getFengZhuang());
+        }
+        if(!StringUtils.isEmpty(pageParam.getReason())){
+            graphiteDiscQueryWrapper.like("abandoned_reason",pageParam.getReason());
+        }
         Page<GraphiteDisc> page = new Page<>();
         page.setCurrent(pageParam.getPageNum());
         page.setSize(pageParam.getPageSize());
-        Page<GraphiteDisc> pageResult = graphiteDiscService.page(page);
+        Page<GraphiteDisc> pageResult = graphiteDiscService.page(page,graphiteDiscQueryWrapper);
         CommonPage<GraphiteDisc> graphiteDiscCommonPage = CommonPage.resetPage(pageResult);
         return CommonResult.success(graphiteDiscCommonPage);
     }

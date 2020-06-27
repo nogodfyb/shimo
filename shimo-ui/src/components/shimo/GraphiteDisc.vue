@@ -9,10 +9,25 @@
   <el-card>
     <!-- 搜索与添加区域  -->
     <el-row :gutter="20">
-      <el-col :span="8">
-        <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="getShiMoList">
+      <el-col :span="4">
+        <el-input placeholder="石墨盘编号" v-model="queryInfo.code" clearable @clear="getShiMoList">
           <el-button slot="append" icon="el-icon-search" @click="getShiMoList"></el-button>
         </el-input>
+      </el-col>
+      <el-col :span="4">
+        <el-input placeholder="废弃原因" v-model="queryInfo.reason" clearable @clear="getShiMoList">
+          <el-button slot="append" icon="el-icon-search" @click="getShiMoList"></el-button>
+        </el-input>
+      </el-col>
+      <el-col :span="4">
+        <el-select v-model="queryInfo.fengZhuang" placeholder="封装类型" clearable @change="getShiMoList">
+          <el-option
+            v-for="item in productionOptions"
+            :key="item.productId"
+            :label="item.label"
+            :value="item.value">
+          </el-option>
+        </el-select>
       </el-col>
       <el-col :span="4">
         <el-button type="primary" @click="dialogVisible=true">添加石墨盘</el-button>
@@ -150,6 +165,7 @@ export default {
   },
   methods: {
     async getShiMoList () {
+      console.log(this.queryInfo)
       const { data: res } = await this.$http.get('graphite-disc/list', { params: this.queryInfo })
       if (res.status !== 200) {
         return this.$message.error('获取用户列表失败！')
