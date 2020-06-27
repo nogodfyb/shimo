@@ -13,6 +13,7 @@ import Plans from '../components/plan/Plans.vue'
 import MachinePlans from '../components/plan/MachinePlans.vue'
 import AssignPlans from '../components/plan/AssignPlans.vue'
 import GraphiteDisc from '../components/shimo/GraphiteDisc.vue'
+import WashRecord from '../components/shimo/WashRecord.vue'
 
 Vue.use(VueRouter)
 
@@ -34,7 +35,8 @@ const routes = [
       { path: '/plans', component: Plans },
       { path: '/machinePlans', component: MachinePlans },
       { path: '/assignPlans', component: AssignPlans },
-      { path: '/shimo', component: GraphiteDisc }
+      { path: '/shimo', component: GraphiteDisc },
+      { path: '/wash', component: WashRecord }
     ]
   }
 ]

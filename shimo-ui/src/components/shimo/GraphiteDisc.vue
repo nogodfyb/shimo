@@ -66,7 +66,7 @@
     width="50%" @close="addDialogClosed"
   >
     <!--      内容主体区域-->
-    <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px" >
+    <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px">
       <el-form-item label="石墨盘编号" prop="code">
         <el-input v-model="addForm.code"></el-input>
       </el-form-item>
