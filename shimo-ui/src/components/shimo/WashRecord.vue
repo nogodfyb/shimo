@@ -58,50 +58,50 @@
           <el-form-item label="背面避让槽深度1" prop="bmbrcDepth1">
             <el-input v-model="addForm.bmbrcDepth1" placeholder="背面避让槽深度1"></el-input>
           </el-form-item>
-          <el-form-item label="背面避让槽深度2">
-            <el-input v-model="addForm.user" placeholder="背面避让槽深度2"></el-input>
+          <el-form-item label="背面避让槽深度2" prop="bmbrcDepth2">
+            <el-input v-model="addForm.bmbrcDepth2" placeholder="背面避让槽深度2"></el-input>
           </el-form-item>
-          <el-form-item label="背面避让槽深度3">
-            <el-input v-model="addForm.user" placeholder="背面避让槽深度3"></el-input>
-          </el-form-item>
-        </el-row>
-        <el-row>
-          <el-form-item label="平整度1">
-            <el-input v-model="addForm.user" placeholder="平整度1"></el-input>
-          </el-form-item>
-          <el-form-item label="平整度2">
-            <el-input v-model="addForm.user" placeholder="平整度2"></el-input>
-          </el-form-item>
-          <el-form-item label="平整度3">
-            <el-input v-model="addForm.user" placeholder="平整度3"></el-input>
+          <el-form-item label="背面避让槽深度3" prop="bmbrcDepth3">
+            <el-input v-model="addForm.bmbrcDepth3" placeholder="背面避让槽深度3"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="定位销孔直径1">
-            <el-input v-model="addForm.user" placeholder="定位销孔直径1"></el-input>
+          <el-form-item label="平整度1" prop="pzd1">
+            <el-input v-model="addForm.pzd1" placeholder="平整度1"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔直径2">
-            <el-input v-model="addForm.user" placeholder="定位销孔直径2"></el-input>
+          <el-form-item label="平整度2" prop="pzd2">
+            <el-input v-model="addForm.pzd2" placeholder="平整度2"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔直径3">
-            <el-input v-model="addForm.user" placeholder="定位销孔直径4"></el-input>
-          </el-form-item>
-          <el-form-item label="定位销孔直径4">
-            <el-input v-model="addForm.user" placeholder="定位销孔直径4"></el-input>
+          <el-form-item label="平整度3" prop="pzd3">
+            <el-input v-model="addForm.pzd3" placeholder="平整度3"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="定位销孔深度1">
-            <el-input v-model="addForm.user" placeholder="定位销孔深度1"></el-input>
+          <el-form-item label="定位销孔直径1" prop="dwxkDiameter1">
+            <el-input v-model="addForm.dwxkDiameter1" placeholder="定位销孔直径1"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔深度2">
-            <el-input v-model="addForm.user" placeholder="定位销孔深度2"></el-input>
+          <el-form-item label="定位销孔直径2" prop="dwxkDiameter2">
+            <el-input v-model="addForm.dwxkDiameter2" placeholder="定位销孔直径2"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔深度3">
-            <el-input v-model="addForm.user" placeholder="定位销孔深度3"></el-input>
+          <el-form-item label="定位销孔直径3" prop="dwxkDiameter3">
+            <el-input v-model="addForm.dwxkDiameter3" placeholder="定位销孔直径3"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔深度4">
-            <el-input v-model="addForm.user" placeholder="定位销孔深度4"></el-input>
+          <el-form-item label="定位销孔直径4" prop="dwxkDiameter4">
+            <el-input v-model="addForm.dwxkDiameter4" placeholder="定位销孔直径4"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="定位销孔深度1" prop="dwxkDepth1">
+            <el-input v-model="addForm.dwxkDepth1" placeholder="定位销孔深度1"></el-input>
+          </el-form-item>
+          <el-form-item label="定位销孔深度2" prop="dwxkDepth2">
+            <el-input v-model="addForm.dwxkDepth2" placeholder="定位销孔深度2"></el-input>
+          </el-form-item>
+          <el-form-item label="定位销孔深度3" prop="dwxkDepth3">
+            <el-input v-model="addForm.dwxkDepth3" placeholder="定位销孔深度3"></el-input>
+          </el-form-item>
+          <el-form-item label="定位销孔深度4" prop="dwxkDepth4">
+            <el-input v-model="addForm.dwxkDepth4" placeholder="定位销孔深度4"></el-input>
           </el-form-item>
         </el-row>
       </el-form>
@@ -120,13 +120,17 @@ export default {
         return cb()
       } else cb(new Error('请输入合法的编号:1-4位数字'))
     }
-    // 验证编号是否已存在
+    // 验证编号是否已存在和是否废弃
     const checkCodeExist = async (rule, value, cb) => {
       const exist = await this.checkCodeExist(value)
-      if (exist) {
-        return cb()
-      } else cb(new Error('石墨盘编号不存在，请重新输入！'))
-      console.log(exist)
+      if (!exist) {
+        cb(new Error('石墨盘编号不存在，请重新输入！'))
+      }
+      const abandoned = await this.checkCodeAbandoned(value)
+      if (abandoned) {
+        cb(new Error('石墨盘编号已废弃，请重新输入！'))
+      }
+      return cb()
     }
     // 验证定位针直径数据范围
     const checkRange = (rule, value, cb) => {
@@ -145,6 +149,33 @@ export default {
       if (number >= (0.85 - 0.05) && number <= (0.85 + 0.05) && regCode.test(value)) {
         return cb()
       } else cb(new Error('请输入合法的范围:0.85±0.05'))
+    }
+    // 验证平整度数据范围
+    const checkRange3 = (rule, value, cb) => {
+      console.log(rule.field)
+      const regCode = /^[0-9]+(.[0-9]{1,10})?$/
+      const number = parseFloat(value)
+      if (number > 0 && number < 100 && regCode.test(value)) {
+        return cb()
+      } else cb(new Error('请输入合法的范围:大于0小于100'))
+    }
+    // 验证定位销孔直径数据范围
+    const checkRange4 = (rule, value, cb) => {
+      console.log(rule.field)
+      const regCode = /^[0-9]+(.[0-9]{1,10})?$/
+      const number = parseFloat(value)
+      if (number >= (2.5 - 0.05) && number <= (2.5 + 0.05) && regCode.test(value)) {
+        return cb()
+      } else cb(new Error('请输入合法的范围:2.5±0.05'))
+    }
+    // 验证定位销孔深度数据范围
+    const checkRange5 = (rule, value, cb) => {
+      console.log(rule.field)
+      const regCode = /^[0-9]+(.[0-9]{1,10})?$/
+      const number = parseFloat(value)
+      if (number >= (7 - 0.2) && number <= (7 + 0.2) && regCode.test(value)) {
+        return cb()
+      } else cb(new Error('请输入合法的范围:7±0.2'))
     }
     return {
       addDialogVisible: false,
@@ -196,6 +227,58 @@ export default {
         bmbrcDepth1: [
           { required: true, message: '请输入背面避让槽深度1', trigger: 'blur' },
           { validator: checkRange2, trigger: 'blur' }
+        ],
+        bmbrcDepth2: [
+          { required: true, message: '请输入背面避让槽深度2', trigger: 'blur' },
+          { validator: checkRange2, trigger: 'blur' }
+        ],
+        bmbrcDepth3: [
+          { required: true, message: '请输入背面避让槽深度3', trigger: 'blur' },
+          { validator: checkRange2, trigger: 'blur' }
+        ],
+        pzd1: [
+          { required: true, message: '请输入平整度1', trigger: 'blur' },
+          { validator: checkRange3, trigger: 'blur' }
+        ],
+        pzd2: [
+          { required: true, message: '请输入平整度2', trigger: 'blur' },
+          { validator: checkRange3, trigger: 'blur' }
+        ],
+        pzd3: [
+          { required: true, message: '请输入平整度3', trigger: 'blur' },
+          { validator: checkRange3, trigger: 'blur' }
+        ],
+        dwxkDiameter1: [
+          { required: true, message: '请输入定位销孔直径1', trigger: 'blur' },
+          { validator: checkRange4, trigger: 'blur' }
+        ],
+        dwxkDiameter2: [
+          { required: true, message: '请输入定位销孔直径2', trigger: 'blur' },
+          { validator: checkRange4, trigger: 'blur' }
+        ],
+        dwxkDiameter3: [
+          { required: true, message: '请输入定位销孔直径3', trigger: 'blur' },
+          { validator: checkRange4, trigger: 'blur' }
+        ],
+        dwxkDiameter4: [
+          { required: true, message: '请输入定位销孔直径4', trigger: 'blur' },
+          { validator: checkRange4, trigger: 'blur' }
+        ],
+        dwxkDepth1: [
+          { required: true, message: '请输入定位销孔深度1', trigger: 'blur' },
+          { validator: checkRange5, trigger: 'blur' }
+        ],
+        dwxkDepth2: [
+          { required: true, message: '请输入定位销孔深度2', trigger: 'blur' },
+          { validator: checkRange5, trigger: 'blur' }
+        ],
+        dwxkDepth3: [
+          { required: true, message: '请输入定位销孔深度3', trigger: 'blur' },
+          { validator: checkRange5, trigger: 'blur' }
+        ],
+        dwxkDepth4: [
+          { required: true, message: '请输入定位销孔深度4', trigger: 'blur' },
+          { validator: checkRange5, trigger: 'blur' }
         ]
       }
     }
@@ -205,6 +288,13 @@ export default {
     },
     async checkCodeExist (code) {
       const { data: res } = await this.$http.get('graphite-disc/check', { params: { code: code } })
+      if (res.status === 200) {
+        return true
+      }
+      return false
+    },
+    async checkCodeAbandoned (code) {
+      const { data: res } = await this.$http.get('graphite-disc/checkCodeAbandoned', { params: { code: code } })
       if (res.status === 200) {
         return true
       }

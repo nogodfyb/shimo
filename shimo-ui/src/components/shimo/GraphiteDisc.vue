@@ -34,7 +34,7 @@
       </el-col>
     </el-row>
     <!-- 石墨盘列表区域 -->
-    <el-table :data="shimoList" border stripe height="650">
+    <el-table :data="shimoList" border stripe height="600">
       <el-table-column type="index"></el-table-column>
       <el-table-column label="石墨盘编号" prop="code"></el-table-column>
       <el-table-column label="封装类型" prop="fengZhuang"></el-table-column>

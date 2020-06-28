@@ -84,4 +84,15 @@ public class GraphiteDiscController {
         }
         return CommonResult.failed();
     }
+
+    @GetMapping("/checkCodeAbandoned")
+    public CommonResult<Object> checkCodeAbandoned(Integer code){
+        QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
+        graphiteDiscQueryWrapper.eq("code",code).eq("is_used",0);
+        GraphiteDisc one = graphiteDiscService.getOne(graphiteDiscQueryWrapper);
+        if(one!=null){
+            return CommonResult.success(null);
+        }
+        return CommonResult.failed();
+    }
 }
