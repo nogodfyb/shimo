@@ -8,6 +8,37 @@
     </el-breadcrumb>
     <el-card>
       <el-button type="primary" @click="addDialogVisible=true">录入清洗校验记录</el-button>
+      <!-- 石墨盘列表区域 -->
+      <el-table :data="washRecordList" border stripe height="600">
+        <el-table-column type="index" fixed></el-table-column>
+        <el-table-column label="石墨盘编号" prop="code"></el-table-column>
+        <el-table-column label="班组" prop="shiftGroup"></el-table-column>
+        <el-table-column label="班次" prop="shift"></el-table-column>
+        <el-table-column label="定位针直径1" prop="dwzDiameter1"></el-table-column>
+        <el-table-column label="定位针直径2" prop="dwzDiameter2"></el-table-column>
+        <el-table-column label="定位针直径3" prop="dwzDiameter3"></el-table-column>
+        <el-table-column label="定位针直径4" prop="dwzDiameter4"></el-table-column>
+        <el-table-column label="定位针直径5" prop="dwzDiameter5"></el-table-column>
+        <el-table-column label="定位针直径6" prop="dwzDiameter6"></el-table-column>
+        <el-table-column label="定位针直径7" prop="dwzDiameter7"></el-table-column>
+        <el-table-column label="定位针直径8" prop="dwzDiameter8"></el-table-column>
+        <el-table-column label="定位针直径9" prop="dwzDiameter9"></el-table-column>
+        <el-table-column label="背面避让槽深度1" prop="bmbrcDepth1"></el-table-column>
+        <el-table-column label="背面避让槽深度2" prop="bmbrcDepth2"></el-table-column>
+        <el-table-column label="背面避让槽深度3" prop="bmbrcDepth3"></el-table-column>
+        <el-table-column label="平整度1" prop="pzd1"></el-table-column>
+        <el-table-column label="平整度2" prop="pzd2"></el-table-column>
+        <el-table-column label="平整度3" prop="pzd3"></el-table-column>
+        <el-table-column label="定位销孔直径1" prop="dwxkDiameter1"></el-table-column>
+        <el-table-column label="定位销孔直径2" prop="dwxkDiameter2"></el-table-column>
+        <el-table-column label="定位销孔直径3" prop="dwxkDiameter3"></el-table-column>
+        <el-table-column label="定位销孔直径4" prop="dwxkDiameter4"></el-table-column>
+        <el-table-column label="定位销孔深度1" prop="dwxkDepth1"></el-table-column>
+        <el-table-column label="定位销孔深度2" prop="dwxkDepth2"></el-table-column>
+        <el-table-column label="定位销孔深度3" prop="dwxkDepth3"></el-table-column>
+        <el-table-column label="定位销孔深度4" prop="dwxkDepth4"></el-table-column>
+        <el-table-column label="创建时间" prop="createdTime" width="200"></el-table-column>
+      </el-table>
     </el-card>
     <!-- 添加清洗校验记录对话框 -->
     <el-dialog
@@ -105,6 +136,11 @@
           </el-form-item>
         </el-row>
       </el-form>
+      <!--      底部区域-->
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="addDialogVisible = false">取 消</el-button>
+    <el-button type="primary"  @click="addWashRecord">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -134,7 +170,6 @@ export default {
     }
     // 验证定位针直径数据范围
     const checkRange = (rule, value, cb) => {
-      console.log(rule.field)
       const regCode = /^[0-9]+(.[0-9]{1,10})?$/
       const number = parseFloat(value)
       if (number >= (1.465 - 0.025) && number <= (1.465 + 0.025) && regCode.test(value)) {
@@ -143,7 +178,6 @@ export default {
     }
     // 验证背面避让槽深度数据范围
     const checkRange2 = (rule, value, cb) => {
-      console.log(rule.field)
       const regCode = /^[0-9]+(.[0-9]{1,10})?$/
       const number = parseFloat(value)
       if (number >= (0.85 - 0.05) && number <= (0.85 + 0.05) && regCode.test(value)) {
@@ -152,7 +186,6 @@ export default {
     }
     // 验证平整度数据范围
     const checkRange3 = (rule, value, cb) => {
-      console.log(rule.field)
       const regCode = /^[0-9]+(.[0-9]{1,10})?$/
       const number = parseFloat(value)
       if (number > 0 && number < 100 && regCode.test(value)) {
@@ -161,7 +194,6 @@ export default {
     }
     // 验证定位销孔直径数据范围
     const checkRange4 = (rule, value, cb) => {
-      console.log(rule.field)
       const regCode = /^[0-9]+(.[0-9]{1,10})?$/
       const number = parseFloat(value)
       if (number >= (2.5 - 0.05) && number <= (2.5 + 0.05) && regCode.test(value)) {
@@ -170,7 +202,6 @@ export default {
     }
     // 验证定位销孔深度数据范围
     const checkRange5 = (rule, value, cb) => {
-      console.log(rule.field)
       const regCode = /^[0-9]+(.[0-9]{1,10})?$/
       const number = parseFloat(value)
       if (number >= (7 - 0.2) && number <= (7 + 0.2) && regCode.test(value)) {
@@ -182,6 +213,7 @@ export default {
       addForm: {
 
       },
+      washRecordList: [],
       addFormRules: {
         code: [
           { required: true, message: '请输入石墨盘编号', trigger: 'blur' },
@@ -283,8 +315,20 @@ export default {
       }
     }
   },
+  created () {
+    this.getWashRecordList()
+  },
   methods: {
+    async getWashRecordList () {
+      const { data: res } = await this.$http.get('wash-record/list')
+      if (res.status !== 200) {
+        return this.$message.error('获取清洗记录列表失败！')
+      }
+      this.washRecordList = res.data
+      console.log(res)
+    },
     addDialogClosed () {
+      this.$refs.addFormRef.resetFields()
     },
     async checkCodeExist (code) {
       const { data: res } = await this.$http.get('graphite-disc/check', { params: { code: code } })
@@ -299,6 +343,20 @@ export default {
         return true
       }
       return false
+    },
+    addWashRecord () {
+      this.$refs.addFormRef.validate(async (valid) => {
+        if (!valid) {
+          return false
+        }
+        // 可以发起添加清洗记录的网络请求
+        const { data: res } = await this.$http.post('wash-record/add', this.addForm)
+        if (res.status !== 200) {
+          return this.$message.error('添加清洗校验记录失败！')
+        }
+        this.$message.success('添加清洗校验记录成功！')
+        // 隐藏添加清洗记录的对话框
+      })
     }
   }
 }

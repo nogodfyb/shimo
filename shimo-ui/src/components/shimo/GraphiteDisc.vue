@@ -168,7 +168,7 @@ export default {
       console.log(this.queryInfo)
       const { data: res } = await this.$http.get('graphite-disc/list', { params: this.queryInfo })
       if (res.status !== 200) {
-        return this.$message.error('获取用户列表失败！')
+        return this.$message.error('获取清洗记录列表失败！')
       }
       this.shimoList = res.data.list
       this.total = res.data.total
