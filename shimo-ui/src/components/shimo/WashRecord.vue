@@ -39,12 +39,22 @@
         <el-table-column label="定位销孔深度4" prop="dwxkDepth4"></el-table-column>
         <el-table-column label="创建时间" prop="createdTime" width="200"></el-table-column>
       </el-table>
+      <!--    分页区域-->
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryInfo.pageNum"
+        :page-sizes="[3, 5, 10, 15]"
+        :page-size="queryInfo.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
     </el-card>
     <!-- 添加清洗校验记录对话框 -->
     <el-dialog
       title="添加清洗校验记录"
       :visible.sync="addDialogVisible"
-      width="70%" @close="addDialogClosed"
+      width="70%" @close="addDialogClosed" :close-on-click-modal="false"
     >
       <el-form :inline="true" :model="addForm" :rules="addFormRules" ref="addFormRef" >
         <el-row>
@@ -209,6 +219,13 @@ export default {
       } else cb(new Error('请输入合法的范围:7±0.2'))
     }
     return {
+      total: 0,
+      queryInfo: {
+        // 当前的页数
+        pageNum: 1,
+        // 当前每页显示多少条数据
+        pageSize: 5
+      },
       addDialogVisible: false,
       addForm: {
 
@@ -320,11 +337,12 @@ export default {
   },
   methods: {
     async getWashRecordList () {
-      const { data: res } = await this.$http.get('wash-record/list')
+      const { data: res } = await this.$http.get('wash-record/list', { params: this.queryInfo })
       if (res.status !== 200) {
         return this.$message.error('获取清洗记录列表失败！')
       }
-      this.washRecordList = res.data
+      this.washRecordList = res.data.list
+      this.total = res.data.total
       console.log(res)
     },
     addDialogClosed () {
@@ -356,7 +374,17 @@ export default {
         }
         this.$message.success('添加清洗校验记录成功！')
         // 隐藏添加清洗记录的对话框
+        // this.addDialogVisible = false
+        await this.getWashRecordList()
       })
+    },
+    handleSizeChange (newSize) {
+      this.queryInfo.pageSize = newSize
+      this.getWashRecordList()
+    },
+    handleCurrentChange (newPage) {
+      this.queryInfo.pageNum = newPage
+      this.getWashRecordList()
     }
   }
 }

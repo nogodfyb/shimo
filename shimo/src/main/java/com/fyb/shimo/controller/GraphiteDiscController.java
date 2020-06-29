@@ -8,10 +8,12 @@ import com.fyb.shimo.common.CommonResult;
 import com.fyb.shimo.dto.GraphiteDiscPageParam;
 import com.fyb.shimo.entity.GraphiteDisc;
 import com.fyb.shimo.service.IGraphiteDiscService;
+import com.fyb.shimo.util.OverTimeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -44,6 +46,11 @@ public class GraphiteDiscController {
         page.setCurrent(pageParam.getPageNum());
         page.setSize(pageParam.getPageSize());
         Page<GraphiteDisc> pageResult = graphiteDiscService.page(page,graphiteDiscQueryWrapper);
+        List<GraphiteDisc> records = pageResult.getRecords();
+        //判断每个石墨盘是否超时
+        for (GraphiteDisc record : records) {
+            OverTimeUtils.checkOverTime(record,LocalDateTime.now());
+        }
         CommonPage<GraphiteDisc> graphiteDiscCommonPage = CommonPage.resetPage(pageResult);
         return CommonResult.success(graphiteDiscCommonPage);
     }

@@ -34,7 +34,7 @@
       </el-col>
     </el-row>
     <!-- 石墨盘列表区域 -->
-    <el-table :data="shimoList" border stripe height="600">
+    <el-table :data="shimoList" border stripe height="600" :row-class-name="tableRowClassName">
       <el-table-column type="index"></el-table-column>
       <el-table-column label="石墨盘编号" prop="code"></el-table-column>
       <el-table-column label="封装类型" prop="fengZhuang"></el-table-column>
@@ -164,6 +164,12 @@ export default {
     this.getShiMoList()
   },
   methods: {
+    tableRowClassName ({ row, rowIndex }) {
+      console.log('row:')
+      console.log(row)
+      console.log('rowIndex')
+      console.log(rowIndex)
+    },
     async getShiMoList () {
       console.log(this.queryInfo)
       const { data: res } = await this.$http.get('graphite-disc/list', { params: this.queryInfo })

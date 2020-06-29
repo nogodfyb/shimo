@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
-import java.time.LocalDateTime;
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -66,6 +66,12 @@ public class GraphiteDisc implements Serializable {
     @TableField(updateStrategy = FieldStrategy.IGNORED)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime abandonedTime;
+
+    private LocalDateTime lastUsedTime;
+
+    //不是数据库字段
+    @TableField(exist = false)
+    private boolean isOverTime;
 
 
 }
