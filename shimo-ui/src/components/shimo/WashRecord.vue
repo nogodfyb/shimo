@@ -9,7 +9,7 @@
     <el-card>
       <el-button type="primary" @click="addDialogVisible=true">录入清洗校验记录</el-button>
       <!-- 石墨盘列表区域 -->
-      <el-table :data="washRecordList" border stripe height="600">
+      <el-table :data="washRecordList" border stripe height="500">
         <el-table-column type="index" fixed></el-table-column>
         <el-table-column label="石墨盘编号" prop="code"></el-table-column>
         <el-table-column label="班组" prop="shiftGroup"></el-table-column>

@@ -34,7 +34,7 @@
       </el-col>
     </el-row>
     <!-- 石墨盘列表区域 -->
-    <el-table :data="shimoList" border stripe height="600" :row-class-name="tableRowClassName">
+    <el-table :data="shimoList" border  height="500" :row-class-name="tableRowClassName">
       <el-table-column type="index"></el-table-column>
       <el-table-column label="石墨盘编号" prop="code"></el-table-column>
       <el-table-column label="封装类型" prop="fengZhuang"></el-table-column>
@@ -47,6 +47,7 @@
       <el-table-column label="废弃原因" prop="abandonedReason"></el-table-column>
       <el-table-column label="创建时间" prop="createdTime"></el-table-column>
       <el-table-column label="废弃时间" prop="abandonedTime"></el-table-column>
+      <el-table-column label="最近使用时间" prop="lastUsedTime"></el-table-column>
     </el-table>
     <!--    分页区域-->
     <el-pagination
@@ -165,10 +166,10 @@ export default {
   },
   methods: {
     tableRowClassName ({ row, rowIndex }) {
-      console.log('row:')
-      console.log(row)
-      console.log('rowIndex')
-      console.log(rowIndex)
+      if (row.overTime === true) {
+        return 'warning-row'
+      }
+      return ''
     },
     async getShiMoList () {
       console.log(this.queryInfo)
@@ -268,6 +269,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+  .el-table .warning-row {
+    background: oldlace;
+  }
 </style>

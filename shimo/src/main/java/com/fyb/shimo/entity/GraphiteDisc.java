@@ -67,6 +67,7 @@ public class GraphiteDisc implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime abandonedTime;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastUsedTime;
 
     //不是数据库字段
