@@ -1,5 +1,6 @@
 package com.fyb.shimo.service;
 
+import com.fyb.shimo.common.CommonResult;
 import com.fyb.shimo.entity.WashRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IWashRecordService extends IService<WashRecord> {
 
+    CommonResult<Object> add(WashRecord washRecord);
 }
