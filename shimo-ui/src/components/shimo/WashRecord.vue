@@ -374,7 +374,7 @@ export default {
         }
         this.$message.success('添加清洗校验记录成功！')
         // 隐藏添加清洗记录的对话框
-        // this.addDialogVisible = false
+        this.addDialogVisible = false
         await this.getWashRecordList()
       })
     },

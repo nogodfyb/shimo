@@ -47,7 +47,7 @@
       <el-table-column label="废弃原因" prop="abandonedReason"></el-table-column>
       <el-table-column label="创建时间" prop="createdTime"></el-table-column>
       <el-table-column label="废弃时间" prop="abandonedTime"></el-table-column>
-      <el-table-column label="最近使用时间" prop="lastUsedTime"></el-table-column>
+      <el-table-column label="最近校验时间" prop="lastUsedTime"></el-table-column>
     </el-table>
     <!--    分页区域-->
     <el-pagination
@@ -95,14 +95,14 @@
     width="50%" @close="editDialogClosed"
   >
     <!--      内容主体区域-->
-    <el-form :model="editForm"  ref="editFormRef" label-width="100px" >
-      <el-form-item label="废弃原因">
+    <el-form :model="editForm"  ref="editFormRef" label-width="100px" :rules="editFormRules">
+      <el-form-item label="废弃原因" prop="abandonedReason">
         <el-input v-model="editForm.abandonedReason"></el-input>
       </el-form-item>
     </el-form>
     <!--      底部区域-->
     <span slot="footer" class="dialog-footer">
-    <el-button @click="editDialogVisible = false">取 消</el-button>
+    <el-button @click="cancel" >取 消</el-button>
     <el-button type="primary"  @click="editShimo">确 定</el-button>
       </span>
   </el-dialog>
@@ -152,6 +152,11 @@ export default {
           { validator: checkCodeExist, trigger: 'blur' }
         ],
         fengZhuang: [{ required: true, message: '请选择石墨盘封装类型', trigger: 'blur' }]
+      },
+      editFormRules: {
+        abandonedReason: [
+          { required: true, message: '请输入废弃原因', trigger: 'blur' }
+        ]
       },
       productionOptions: [
         { productId: 1, label: 'SMB-FL', value: 'SMB-FL' },
@@ -252,18 +257,27 @@ export default {
       this.editForm.isUsed = !this.editForm.isUsed
       this.$refs.editFormRef.resetFields()
     },
-    async editShimo () {
-      // 可以发起添加石墨盘的网络请求
-      const { data: res } = await this.$http.post('graphite-disc/edit', this.editForm)
-      if (res.status !== 200) {
-        this.editForm.isUsed = !this.editForm.isUsed
-        return this.$message.error('修改石墨盘状态失败！')
-      }
-      this.$message.success('修改石墨盘状态成功！石墨盘已废弃！')
-      // 隐藏修改石墨盘的对话框
+    editShimo () {
+      this.$refs.editFormRef.validate(async (valid) => {
+        if (!valid) {
+          return false
+        }
+        // 可以发起修改石墨盘的网络请求
+        const { data: res } = await this.$http.post('graphite-disc/edit', this.editForm)
+        if (res.status !== 200) {
+          this.editForm.isUsed = !this.editForm.isUsed
+          return this.$message.error('修改石墨盘状态失败！')
+        }
+        this.$message.success('修改石墨盘状态成功！石墨盘已废弃！')
+        // 隐藏修改石墨盘的对话框
+        this.editDialogVisible = false
+        // 重新获取石墨盘列表数据
+        this.getShiMoList()
+      })
+    },
+    cancel () {
       this.editDialogVisible = false
-      // 重新获取石墨盘列表数据
-      this.getShiMoList()
+      this.editForm.abandonedReason = ''
     }
   }
 }
@@ -271,6 +285,7 @@ export default {
 
 <style>
   .el-table .warning-row {
-    background: oldlace;
+    background: red;
+    color: #000000 ;
   }
 </style>
