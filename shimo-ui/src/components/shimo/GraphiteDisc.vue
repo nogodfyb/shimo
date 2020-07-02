@@ -128,6 +128,16 @@ export default {
       } else cb(new Error('石墨盘编号已存在，请重新输入新的编号！'))
       console.log(exist)
     }
+    const checkfengZhuang = (rule, value, cb) => {
+      // 验证封装是否正确
+      const arr = ['SMB-FL', 'SOD323HE', 'SMA-FL', 'SOD123FL']
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] === value) {
+          return cb()
+        }
+      }
+      cb(new Error('封装类型不合法'))
+    }
     return {
       // 获取石墨列表的参数对象
       queryInfo: {
@@ -151,7 +161,10 @@ export default {
           { validator: checkCode, trigger: 'blur' },
           { validator: checkCodeExist, trigger: 'blur' }
         ],
-        fengZhuang: [{ required: true, message: '请选择石墨盘封装类型', trigger: 'blur' }]
+        fengZhuang: [
+          { required: true, message: '请选择石墨盘封装类型', trigger: 'blur' },
+          { validator: checkfengZhuang, trigger: 'blur' }
+        ]
       },
       editFormRules: {
         abandonedReason: [
