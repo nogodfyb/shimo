@@ -5,7 +5,7 @@ import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
 
 import axios from 'axios'
-axios.defaults.baseURL = 'http://172.17.60.233:8081/shimo/'
+axios.defaults.baseURL = '/shimo/'
 // 允许携带cookie
 axios.defaults.withCredentials = true
 Vue.prototype.$http = axios
