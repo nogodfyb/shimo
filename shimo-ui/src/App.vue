@@ -12,5 +12,7 @@ export default {
 </script>
 
 <style>
-
+  #nprogress .bar {
+    height: 5px !important;
+  }
 </style>

@@ -9,9 +9,11 @@ import com.fyb.shimo.dto.GraphiteDiscPageParam;
 import com.fyb.shimo.entity.GraphiteDisc;
 import com.fyb.shimo.service.IGraphiteDiscService;
 import com.fyb.shimo.util.OverTimeUtils;
+import com.fyb.shimo.vo.StatisticVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,9 +32,17 @@ public class GraphiteDiscController {
     @Autowired
     private IGraphiteDiscService graphiteDiscService;
 
+    //分页查询
     @GetMapping("/list")
     public CommonResult<CommonPage<GraphiteDisc>> list(GraphiteDiscPageParam pageParam){
         QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
+        Page<GraphiteDisc> page = new Page<>();
+        page.setCurrent(pageParam.getPageNum());
+        page.setSize(pageParam.getPageSize());
+        //如果当前查询模式是查询超期的石墨盘
+        if (pageParam.getOverTimeMode()) {
+            graphiteDiscQueryWrapper.apply("TIMESTAMPDIFF(DAY,last_used_time,NOW())>=30");
+        }
         if(pageParam.getCode()!=null){
             graphiteDiscQueryWrapper.like("code",pageParam.getCode());
         }
@@ -42,9 +52,6 @@ public class GraphiteDiscController {
         if(!StringUtils.isEmpty(pageParam.getReason())){
             graphiteDiscQueryWrapper.like("abandoned_reason",pageParam.getReason());
         }
-        Page<GraphiteDisc> page = new Page<>();
-        page.setCurrent(pageParam.getPageNum());
-        page.setSize(pageParam.getPageSize());
         Page<GraphiteDisc> pageResult = graphiteDiscService.page(page,graphiteDiscQueryWrapper);
         List<GraphiteDisc> records = pageResult.getRecords();
         //判断每个石墨盘是否超时
@@ -82,7 +89,7 @@ public class GraphiteDiscController {
     }
 
     @GetMapping("/check")
-    public  CommonResult<Object> checkCodeExist(Integer code){
+    public  CommonResult<Object> checkCodeExist(String code){
         QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
         graphiteDiscQueryWrapper.eq("code",code);
         GraphiteDisc one = graphiteDiscService.getOne(graphiteDiscQueryWrapper);
@@ -93,7 +100,7 @@ public class GraphiteDiscController {
     }
 
     @GetMapping("/checkCodeAbandoned")
-    public CommonResult<Object> checkCodeAbandoned(Integer code){
+    public CommonResult<Object> checkCodeAbandoned(String code){
         QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
         graphiteDiscQueryWrapper.eq("code",code).eq("is_used",0);
         GraphiteDisc one = graphiteDiscService.getOne(graphiteDiscQueryWrapper);
@@ -101,5 +108,21 @@ public class GraphiteDiscController {
             return CommonResult.success(null);
         }
         return CommonResult.failed();
+    }
+
+    //校验是否有一个月未校验的石墨盘
+    @GetMapping("/isOverTime")
+    public CommonResult<Object> listOverTime(){
+        QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
+        graphiteDiscQueryWrapper.apply("TIMESTAMPDIFF(DAY,last_used_time,NOW())>=30");
+        List<GraphiteDisc> list = graphiteDiscService.list(graphiteDiscQueryWrapper);
+        return list.size()>0?CommonResult.success(null):CommonResult.failed();
+    }
+
+    //列出石墨盘使用情况
+    @GetMapping("/listStatistics")
+    public CommonResult<List<StatisticVo>> listStatistics(){
+        List<StatisticVo> statisticVos = graphiteDiscService.listStatistics();
+        return CommonResult.success(statisticVos);
     }
 }

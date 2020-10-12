@@ -14,6 +14,7 @@
         <el-table-column label="石墨盘编号" prop="code"></el-table-column>
         <el-table-column label="班组" prop="shiftGroup"></el-table-column>
         <el-table-column label="班次" prop="shift"></el-table-column>
+        <el-table-column label="创建时间" prop="createdTime" width="200"></el-table-column>
         <el-table-column label="定位针直径1" prop="dwzDiameter1"></el-table-column>
         <el-table-column label="定位针直径2" prop="dwzDiameter2"></el-table-column>
         <el-table-column label="定位针直径3" prop="dwzDiameter3"></el-table-column>
@@ -37,7 +38,19 @@
         <el-table-column label="定位销孔深度2" prop="dwxkDepth2"></el-table-column>
         <el-table-column label="定位销孔深度3" prop="dwxkDepth3"></el-table-column>
         <el-table-column label="定位销孔深度4" prop="dwxkDepth4"></el-table-column>
-        <el-table-column label="创建时间" prop="createdTime" width="200"></el-table-column>
+        <el-table-column label="定位销钉高度1" prop="dwxdHeight1"></el-table-column>
+        <el-table-column label="定位销钉高度2" prop="dwxdHeight2"></el-table-column>
+        <el-table-column label="定位销钉高度3" prop="dwxdHeight3"></el-table-column>
+        <el-table-column label="定位销钉高度4" prop="dwxdHeight4"></el-table-column>
+        <el-table-column label="定位针高度1" prop="dwzHeight1"></el-table-column>
+        <el-table-column label="定位针高度2" prop="dwzHeight2"></el-table-column>
+        <el-table-column label="定位针高度3" prop="dwzHeight3"></el-table-column>
+        <el-table-column label="定位针高度4" prop="dwzHeight4"></el-table-column>
+        <el-table-column label="定位针高度5" prop="dwzHeight5"></el-table-column>
+        <el-table-column label="定位针高度6" prop="dwzHeight6"></el-table-column>
+        <el-table-column label="定位针高度7" prop="dwzHeight7"></el-table-column>
+        <el-table-column label="定位针高度8" prop="dwzHeight8"></el-table-column>
+        <el-table-column label="定位针高度9" prop="dwzHeight9"></el-table-column>
       </el-table>
       <!--    分页区域-->
       <el-pagination
@@ -63,86 +76,133 @@
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="定位针直径1" prop="dwzDiameter1">
+          <el-form-item label="定位针直径" prop="dwzDiameter1">
             <el-input v-model="addForm.dwzDiameter1" placeholder="定位针直径1"></el-input>
           </el-form-item>
-          <el-form-item label="定位针直径2" prop="dwzDiameter2">
+          <el-form-item  prop="dwzDiameter2">
             <el-input v-model="addForm.dwzDiameter2" placeholder="定位针直径2"></el-input>
           </el-form-item>
-          <el-form-item label="定位针直径3" prop="dwzDiameter3">
+          <el-form-item  prop="dwzDiameter3">
             <el-input v-model="addForm.dwzDiameter3" placeholder="定位针直径3"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="定位针直径4" prop="dwzDiameter4">
+          <el-form-item label="定位针直径" prop="dwzDiameter4">
             <el-input v-model="addForm.dwzDiameter4" placeholder="定位针直径4"></el-input>
           </el-form-item>
-          <el-form-item label="定位针直径5" prop="dwzDiameter5">
+          <el-form-item  prop="dwzDiameter5">
             <el-input v-model="addForm.dwzDiameter5" placeholder="定位针直径5"></el-input>
           </el-form-item>
-          <el-form-item label="定位针直径6" prop="dwzDiameter6">
+          <el-form-item  prop="dwzDiameter6">
             <el-input v-model="addForm.dwzDiameter6" placeholder="定位针直径6"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="定位针直径7" prop="dwzDiameter7">
+          <el-form-item label="定位针直径" prop="dwzDiameter7">
             <el-input v-model="addForm.dwzDiameter7" placeholder="定位针直径7"></el-input>
           </el-form-item>
-          <el-form-item label="定位针直径8" prop="dwzDiameter8">
+          <el-form-item  prop="dwzDiameter8">
             <el-input v-model="addForm.dwzDiameter8" placeholder="定位针直径8"></el-input>
           </el-form-item>
-          <el-form-item label="定位针直径9" prop="dwzDiameter9">
+          <el-form-item  prop="dwzDiameter9">
             <el-input v-model="addForm.dwzDiameter9" placeholder="定位针直径9"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="背面避让槽深度1" prop="bmbrcDepth1">
+          <el-form-item label="背面避让槽深度" prop="bmbrcDepth1">
             <el-input v-model="addForm.bmbrcDepth1" placeholder="背面避让槽深度1"></el-input>
           </el-form-item>
-          <el-form-item label="背面避让槽深度2" prop="bmbrcDepth2">
+          <el-form-item  prop="bmbrcDepth2">
             <el-input v-model="addForm.bmbrcDepth2" placeholder="背面避让槽深度2"></el-input>
           </el-form-item>
-          <el-form-item label="背面避让槽深度3" prop="bmbrcDepth3">
+          <el-form-item  prop="bmbrcDepth3">
             <el-input v-model="addForm.bmbrcDepth3" placeholder="背面避让槽深度3"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="平整度1" prop="pzd1">
+          <el-form-item label="平整度" prop="pzd1">
             <el-input v-model="addForm.pzd1" placeholder="平整度1"></el-input>
           </el-form-item>
-          <el-form-item label="平整度2" prop="pzd2">
+          <el-form-item  prop="pzd2">
             <el-input v-model="addForm.pzd2" placeholder="平整度2"></el-input>
           </el-form-item>
-          <el-form-item label="平整度3" prop="pzd3">
+          <el-form-item  prop="pzd3">
             <el-input v-model="addForm.pzd3" placeholder="平整度3"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="定位销孔直径1" prop="dwxkDiameter1">
+          <el-form-item label="定位销孔直径" prop="dwxkDiameter1">
             <el-input v-model="addForm.dwxkDiameter1" placeholder="定位销孔直径1"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔直径2" prop="dwxkDiameter2">
+          <el-form-item  prop="dwxkDiameter2">
             <el-input v-model="addForm.dwxkDiameter2" placeholder="定位销孔直径2"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔直径3" prop="dwxkDiameter3">
+          <el-form-item  prop="dwxkDiameter3">
             <el-input v-model="addForm.dwxkDiameter3" placeholder="定位销孔直径3"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔直径4" prop="dwxkDiameter4">
+          <el-form-item  prop="dwxkDiameter4">
             <el-input v-model="addForm.dwxkDiameter4" placeholder="定位销孔直径4"></el-input>
           </el-form-item>
         </el-row>
         <el-row>
-          <el-form-item label="定位销孔深度1" prop="dwxkDepth1">
+          <el-form-item label="定位销孔深度" prop="dwxkDepth1">
             <el-input v-model="addForm.dwxkDepth1" placeholder="定位销孔深度1"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔深度2" prop="dwxkDepth2">
+          <el-form-item  prop="dwxkDepth2">
             <el-input v-model="addForm.dwxkDepth2" placeholder="定位销孔深度2"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔深度3" prop="dwxkDepth3">
+          <el-form-item  prop="dwxkDepth3">
             <el-input v-model="addForm.dwxkDepth3" placeholder="定位销孔深度3"></el-input>
           </el-form-item>
-          <el-form-item label="定位销孔深度4" prop="dwxkDepth4">
+          <el-form-item  prop="dwxkDepth4">
             <el-input v-model="addForm.dwxkDepth4" placeholder="定位销孔深度4"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="定位销钉高度" prop="dwxdHeight1">
+            <el-input v-model="addForm.dwxdHeight1" placeholder="定位销钉高度1"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwxdHeight2">
+            <el-input v-model="addForm.dwxdHeight2" placeholder="定位销钉高度2"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwxdHeight3">
+            <el-input v-model="addForm.dwxdHeight3" placeholder="定位销钉高度3"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwxdHeight4">
+            <el-input v-model="addForm.dwxdHeight4" placeholder="定位销钉高度4"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="定位针高度" prop="dwzHeight1">
+            <el-input v-model="addForm.dwzHeight1" placeholder="定位针高度1"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwzHeight2">
+            <el-input v-model="addForm.dwzHeight2" placeholder="定位针高度2"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwzHeight3">
+            <el-input v-model="addForm.dwzHeight3" placeholder="定位针高度3"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="定位针高度" prop="dwzHeight4">
+            <el-input v-model="addForm.dwzHeight4" placeholder="定位针高度4"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwzHeight5">
+            <el-input v-model="addForm.dwzHeight5" placeholder="定位针高度5"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwzHeight6">
+            <el-input v-model="addForm.dwzHeight6" placeholder="定位针高度6"></el-input>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="定位针高度" prop="dwzHeight7">
+            <el-input v-model="addForm.dwzHeight7" placeholder="定位针高度7"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwzHeight8">
+            <el-input v-model="addForm.dwzHeight8" placeholder="定位针高度8"></el-input>
+          </el-form-item>
+          <el-form-item  prop="dwzHeight9">
+            <el-input v-model="addForm.dwzHeight9" placeholder="定位针高度9"></el-input>
           </el-form-item>
         </el-row>
       </el-form>
@@ -217,6 +277,14 @@ export default {
       if (number >= (7 - 0.2) && number <= (7 + 0.2) && regCode.test(value)) {
         return cb()
       } else cb(new Error('请输入合法的范围:7±0.2'))
+    }
+    // 验证定位销钉高度数据范围
+    const checkRange6 = (rule, value, cb) => {
+      const regCode = /^([1-9][0-9]*)+(.[0-9]{1,5})?$/
+      const number = parseFloat(value)
+      if (regCode.test(value) && number > 0) {
+        return cb()
+      } else cb(new Error('请输入合法数值'))
     }
     return {
       total: 0,
@@ -328,6 +396,58 @@ export default {
         dwxkDepth4: [
           { required: true, message: '请输入定位销孔深度4', trigger: 'blur' },
           { validator: checkRange5, trigger: 'blur' }
+        ],
+        dwxdHeight1: [
+          { required: true, message: '请输入定位销钉高度1', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwxdHeight2: [
+          { required: true, message: '请输入定位销钉高度2', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwxdHeight3: [
+          { required: true, message: '请输入定位销钉高度3', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwxdHeight4: [
+          { required: true, message: '请输入定位销钉高度4', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight1: [
+          { required: true, message: '请输入定位针高度1', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight2: [
+          { required: true, message: '请输入定位针高度2', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight3: [
+          { required: true, message: '请输入定位针高度3', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight4: [
+          { required: true, message: '请输入定位针高度4', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight5: [
+          { required: true, message: '请输入定位针高度5', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight6: [
+          { required: true, message: '请输入定位针高度6', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight7: [
+          { required: true, message: '请输入定位针高度7', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight8: [
+          { required: true, message: '请输入定位针高度8', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
+        ],
+        dwzHeight9: [
+          { required: true, message: '请输入定位针高度9', trigger: 'blur' },
+          { validator: checkRange6, trigger: 'blur' }
         ]
       }
     }

@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author fyb
- * @since 2020-06-28
+ * @since 2020-10-12
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -113,6 +113,60 @@ public class WashRecord implements Serializable {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdTime;
+
+    /**
+     * 定位针高度
+     */
+    @TableField("dwzHeight1")
+    private String dwzHeight1;
+
+    @TableField("dwzHeight2")
+    private String dwzHeight2;
+
+    @TableField("dwzHeight3")
+    private String dwzHeight3;
+
+    @TableField("dwzHeight4")
+    private String dwzHeight4;
+
+    @TableField("dwzHeight5")
+    private String dwzHeight5;
+
+    @TableField("dwzHeight6")
+    private String dwzHeight6;
+
+    @TableField("dwzHeight7")
+    private String dwzHeight7;
+
+    @TableField("dwzHeight8")
+    private String dwzHeight8;
+
+    @TableField("dwzHeight9")
+    private String dwzHeight9;
+
+    /**
+     * 定位销钉高度
+     */
+    @TableField("dwxdHeight1")
+    private String dwxdHeight1;
+
+    /**
+     * 定位销钉高度
+     */
+    @TableField("dwxdHeight2")
+    private String dwxdHeight2;
+
+    /**
+     * 定位销钉高度
+     */
+    @TableField("dwxdHeight3")
+    private String dwxdHeight3;
+
+    /**
+     * 定位销钉高度
+     */
+    @TableField("dwxdHeight4")
+    private String dwxdHeight4;
 
 
 }

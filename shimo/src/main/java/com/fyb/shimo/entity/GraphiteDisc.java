@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  * </p>
  *
  * @author fyb
- * @since 2020-06-26
+ * @since 2020-10-12
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -36,7 +36,7 @@ public class GraphiteDisc implements Serializable {
     /**
      * 编号
      */
-    private Integer code;
+    private String code;
 
     /**
      * 封装类型
@@ -67,12 +67,30 @@ public class GraphiteDisc implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime abandonedTime;
 
+    /**
+     * ‌最近使用时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastUsedTime;
 
     //不是数据库字段
     @TableField(exist = false)
     private boolean isOverTime;
+
+    /**
+     * 长
+     */
+    private String length;
+
+    /**
+     * 宽
+     */
+    private String width;
+
+    /**
+     * 厚
+     */
+    private String thickness;
 
 
 }

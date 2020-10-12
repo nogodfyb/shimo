@@ -2,4 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fyb.shimo.mapper.GraphiteDiscMapper">
 
+    <select id="listStatistics" resultType="com.fyb.shimo.vo.StatisticVo">
+        SELECT
+	feng_zhuang,
+	SUM(
+		CASE
+		WHEN is_used = 0 THEN
+			1
+		ELSE
+			0
+		END
+	) AS abandon,
+	SUM(
+		CASE
+		WHEN is_used = 1 THEN
+			1
+		ELSE
+			0
+		END
+	) AS used,
+	COUNT(*) AS total
+FROM
+	graphite_disc
+GROUP BY
+	feng_zhuang
+    </select>
 </mapper>

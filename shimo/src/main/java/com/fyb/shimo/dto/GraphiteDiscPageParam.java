@@ -9,4 +9,5 @@ public class GraphiteDiscPageParam {
     private Integer code;
     private String reason;
     private String fengZhuang;
+    private Boolean overTimeMode;
 }
