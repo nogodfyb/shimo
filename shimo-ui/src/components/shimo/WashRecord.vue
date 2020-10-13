@@ -481,13 +481,16 @@ export default {
       },
       gridData: [
         {
-          eventName: '创建时间'
+          eventName: '创建时间',
+          eventValue: ''
         },
         {
-          eventName: '废弃时间'
+          eventName: '废弃时间',
+          eventValue: ''
         },
         {
-          eventName: '废弃原因'
+          eventName: '废弃原因',
+          eventValue: ''
         }]
     }
   },
