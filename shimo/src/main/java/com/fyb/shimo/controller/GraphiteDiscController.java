@@ -1,10 +1,13 @@
 package com.fyb.shimo.controller;
 
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fyb.shimo.common.CommonPage;
 import com.fyb.shimo.common.CommonResult;
+import com.fyb.shimo.common.Const;
 import com.fyb.shimo.dto.GraphiteDiscPageParam;
 import com.fyb.shimo.entity.GraphiteDisc;
 import com.fyb.shimo.service.IGraphiteDiscService;
@@ -14,7 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -34,7 +42,7 @@ public class GraphiteDiscController {
 
     //分页查询
     @GetMapping("/list")
-    public CommonResult<CommonPage<GraphiteDisc>> list(GraphiteDiscPageParam pageParam){
+    public CommonResult<CommonPage<GraphiteDisc>> list(GraphiteDiscPageParam pageParam, HttpSession session){
         QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
         Page<GraphiteDisc> page = new Page<>();
         page.setCurrent(pageParam.getPageNum());
@@ -43,7 +51,7 @@ public class GraphiteDiscController {
         if (pageParam.getOverTimeMode()) {
             graphiteDiscQueryWrapper.apply("TIMESTAMPDIFF(DAY,last_used_time,NOW())>=30");
         }
-        if(pageParam.getCode()!=null){
+        if(!StringUtils.isEmpty(pageParam.getCode())){
             graphiteDiscQueryWrapper.like("code",pageParam.getCode());
         }
         if(!StringUtils.isEmpty(pageParam.getFengZhuang())){
@@ -54,12 +62,24 @@ public class GraphiteDiscController {
         }
         Page<GraphiteDisc> pageResult = graphiteDiscService.page(page,graphiteDiscQueryWrapper);
         List<GraphiteDisc> records = pageResult.getRecords();
+        //存储当前查询记录到session中
+        List<GraphiteDisc> graphiteDiscs = graphiteDiscService.list(graphiteDiscQueryWrapper);
+        session.setAttribute(Const.CURRENT_EXPORT_GRAPHITE_EXCEL,graphiteDiscs);
         //判断每个石墨盘是否超时
         for (GraphiteDisc record : records) {
             OverTimeUtils.checkOverTime(record,LocalDateTime.now());
         }
         CommonPage<GraphiteDisc> graphiteDiscCommonPage = CommonPage.resetPage(pageResult);
         return CommonResult.success(graphiteDiscCommonPage);
+    }
+
+    //根据石墨盘id查询石墨盘
+    @GetMapping("{code}")
+    public CommonResult<GraphiteDisc> queryGraphiteDisc(@PathVariable String  code){
+        QueryWrapper<GraphiteDisc> graphiteDiscQueryWrapper = new QueryWrapper<>();
+        graphiteDiscQueryWrapper.eq("code",code);
+        GraphiteDisc graphiteDisc = graphiteDiscService.getOne(graphiteDiscQueryWrapper);
+        return CommonResult.success(graphiteDisc);
     }
 
     @PostMapping("/add")
@@ -124,5 +144,20 @@ public class GraphiteDiscController {
     public CommonResult<List<StatisticVo>> listStatistics(){
         List<StatisticVo> statisticVos = graphiteDiscService.listStatistics();
         return CommonResult.success(statisticVos);
+    }
+
+    //导出当前查询条件下的所有数据
+    @GetMapping("exportExcel")
+    public void exportExcel(HttpServletResponse response, HttpSession session) throws IOException {
+        List<GraphiteDisc> excleVos =(List<GraphiteDisc>) session.getAttribute(Const.CURRENT_EXPORT_GRAPHITE_EXCEL);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+        // 这里注意 有同学反应使用swagger 会导致各种问题，请直接用浏览器或者用postman
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        // 这里URLEncoder.encode可以防止中文乱码 当然和easyexcel没有关系
+        String fileName = URLEncoder.encode(now.format(formatter)+"石墨盘列表", "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), GraphiteDisc.class).registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()).sheet("石墨盘").doWrite(excleVos);
     }
 }

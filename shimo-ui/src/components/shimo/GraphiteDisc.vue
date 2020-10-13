@@ -35,12 +35,15 @@
       <el-col :span="2">
         <el-switch v-model="queryInfo.overTimeMode" @change="overTimeChange"></el-switch>
       </el-col>
-      <el-col :span="4">
+      <el-col :span="3">
         <el-button type="primary" @click="dialogVisible=true">添加石墨盘</el-button>
+      </el-col>
+      <el-col :span="2">
+        <el-button type="info" @click="exportExcel">导出</el-button>
       </el-col>
     </el-row>
     <!-- 石墨盘列表区域 -->
-    <el-table :data="shimoList" border  height="500" :row-class-name="tableRowClassName">
+    <el-table :data="shimoList" border  :height="height" :row-class-name="tableRowClassName">
       <el-table-column type="index" fixed></el-table-column>
       <el-table-column label="石墨盘编号" prop="code" width="100"></el-table-column>
       <el-table-column label="石墨盘长度(mm)" prop="length" width="140"></el-table-column>
@@ -128,6 +131,7 @@
 </template>
 
 <script>
+import config from '../../util/config'
 export default {
   data () {
     // 验证编号的规则
@@ -164,6 +168,7 @@ export default {
       } else cb(new Error('请输入合法数值'))
     }
     return {
+      height: 500,
       // 获取石墨列表的参数对象
       queryInfo: {
         // 当前的页数
@@ -176,6 +181,7 @@ export default {
       total: 0,
       dialogVisible: false,
       editDialogVisible: false,
+      BASE_REQUEST_PATH: config.BASE_REQUEST_PATH,
       addForm: {
         code: '',
         fengZhuang: '',
@@ -221,6 +227,9 @@ export default {
     }
   },
   async created () {
+    if (window.screen.width < 1400) {
+      this.height -= 120
+    }
     await this.checkIsOverTime()
     await this.getShiMoList()
   },
@@ -346,6 +355,9 @@ export default {
     search () {
       this.queryInfo.pageNum = 1
       this.getShiMoList()
+    },
+    exportExcel () {
+      window.location.href = this.BASE_REQUEST_PATH + 'shimo/graphite-disc/exportExcel'
     }
   }
 }

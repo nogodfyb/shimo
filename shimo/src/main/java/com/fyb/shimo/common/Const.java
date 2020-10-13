@@ -9,4 +9,8 @@ public class Const {
         String ZHONG="中";
         String YE="夜";
     }
+
+    public static final String CURRENT_EXPORT_GRAPHITE_EXCEL="currentExportGraphiteExcel";
+
+    public static final String CURRENT_EXPORT_RECORD_EXCEL="currentExportRecordExcel";
 }

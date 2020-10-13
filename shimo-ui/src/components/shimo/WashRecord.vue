@@ -7,11 +7,37 @@
       <el-breadcrumb-item>清洗校验记录</el-breadcrumb-item>
     </el-breadcrumb>
     <el-card>
-      <el-button type="primary" @click="addDialogVisible=true">录入清洗校验记录</el-button>
+      <el-row :gutter="20">
+        <el-col :span="4">
+          <el-input placeholder="石墨盘编号" v-model="queryInfo.code" clearable @clear="getWashRecordList">
+            <el-button slot="append" icon="el-icon-search" @click="search"></el-button>
+          </el-input>
+        </el-col>
+        <el-col :span="4">
+          <el-button type="primary" @click="addDialogVisible=true">录入清洗校验记录</el-button>
+        </el-col>
+        <el-col :span="2">
+          <el-button type="info" @click="exportExcel">导出</el-button>
+        </el-col>
+      </el-row>
       <!-- 石墨盘列表区域 -->
-      <el-table :data="washRecordList" border stripe height="500">
+      <el-table :data="washRecordList" border stripe :height="height" @cell-mouse-enter="onHoverCell">
         <el-table-column type="index" fixed></el-table-column>
-        <el-table-column label="石墨盘编号" prop="code"></el-table-column>
+        <el-table-column label="石墨盘编号" prop="code">
+          <template slot-scope="scope">
+            <el-popover
+              placement="top-start"
+              width="400"
+              title="石墨盘信息"
+              trigger="hover">
+              <el-table :data="gridData">
+                <el-table-column width="150" property="eventName" ></el-table-column>
+                <el-table-column width="200" property="eventValue" ></el-table-column>
+              </el-table>
+              <el-button slot="reference">{{scope.row.code}}</el-button>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column label="班组" prop="shiftGroup"></el-table-column>
         <el-table-column label="班次" prop="shift"></el-table-column>
         <el-table-column label="创建时间" prop="createdTime" width="200"></el-table-column>
@@ -216,6 +242,7 @@
 </template>
 
 <script>
+import config from '../../util/config'
 export default {
   data () {
     // 验证编号的规则
@@ -287,12 +314,14 @@ export default {
       } else cb(new Error('请输入合法数值'))
     }
     return {
+      height: 500,
       total: 0,
       queryInfo: {
         // 当前的页数
         pageNum: 1,
         // 当前每页显示多少条数据
-        pageSize: 5
+        pageSize: 5,
+        code: ''
       },
       addDialogVisible: false,
       addForm: {
@@ -449,10 +478,23 @@ export default {
           { required: true, message: '请输入定位针高度9', trigger: 'blur' },
           { validator: checkRange6, trigger: 'blur' }
         ]
-      }
+      },
+      gridData: [
+        {
+          eventName: '创建时间'
+        },
+        {
+          eventName: '废弃时间'
+        },
+        {
+          eventName: '废弃原因'
+        }]
     }
   },
   created () {
+    if (window.screen.width < 1400) {
+      this.height -= 120
+    }
     this.getWashRecordList()
   },
   methods: {
@@ -464,6 +506,10 @@ export default {
       this.washRecordList = res.data.list
       this.total = res.data.total
       console.log(res)
+    },
+    search () {
+      this.queryInfo.pageNum = 1
+      this.getWashRecordList()
     },
     addDialogClosed () {
       this.$refs.addFormRef.resetFields()
@@ -505,6 +551,20 @@ export default {
     handleCurrentChange (newPage) {
       this.queryInfo.pageNum = newPage
       this.getWashRecordList()
+    },
+    async onHoverCell (row, column) {
+      if (column.label === '石墨盘编号') {
+        const { data: res } = await this.$http.get(`graphite-disc/${row.code}`)
+        if (res.status !== 200) {
+          return this.$message.error('获取石墨盘信息失败')
+        }
+        this.gridData[0].eventValue = res.data.createdTime
+        this.gridData[1].eventValue = res.data.abandonedTime
+        this.gridData[2].eventValue = res.data.abandonedReason
+      }
+    },
+    exportExcel () {
+      window.location.href = config.BASE_REQUEST_PATH + 'shimo/wash-record/exportExcel'
     }
   }
 }

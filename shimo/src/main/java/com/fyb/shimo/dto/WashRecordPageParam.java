@@ -6,4 +6,5 @@ import lombok.Data;
 public class WashRecordPageParam {
     private Integer pageNum;
     private Integer pageSize;
+    private String code;
 }
