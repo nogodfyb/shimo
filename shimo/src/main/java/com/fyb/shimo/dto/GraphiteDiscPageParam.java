@@ -6,7 +6,7 @@ import lombok.Data;
 public class GraphiteDiscPageParam {
     private Integer pageNum;
     private Integer pageSize;
-    private Integer code;
+    private String code;
     private String reason;
     private String fengZhuang;
     private Boolean overTimeMode;

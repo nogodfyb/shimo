@@ -62,6 +62,7 @@ export default {
         return this.$message.error('获取石墨盘统计情况失败!')
       }
       this.list = res.data
+      this.option.xAxis.data = this.list.map(item => item.fengZhuang)
       this.option.series[0].data = this.list.map(item => item.abandon)
       this.option.series[1].data = this.list.map(item => item.used)
     },

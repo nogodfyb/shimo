@@ -23,7 +23,7 @@
       <!-- 石墨盘列表区域 -->
       <el-table :data="washRecordList" border stripe :height="height" @cell-mouse-enter="onHoverCell">
         <el-table-column type="index" fixed></el-table-column>
-        <el-table-column label="石墨盘编号" prop="code">
+        <el-table-column label="石墨盘编号" prop="code" width="100">
           <template slot-scope="scope">
             <el-popover
               placement="top-start"
@@ -248,10 +248,10 @@ export default {
     // 验证编号的规则
     const checkCode = (rule, value, cb) => {
       // 验证编号的正则表达式
-      const regCode = /^[0-9]{1,4}$/
+      const regCode = /^[A-Z0-9]{1,12}$/
       if (regCode.test(value)) {
         return cb()
-      } else cb(new Error('请输入合法的编号:1-4位数字'))
+      } else cb(new Error('请输入合法的编号:1-12大写英文和数字的组合'))
     }
     // 验证编号是否已存在和是否废弃
     const checkCodeExist = async (rule, value, cb) => {
