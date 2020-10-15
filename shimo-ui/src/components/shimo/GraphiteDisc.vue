@@ -279,16 +279,13 @@ export default {
         if (!valid) {
           return false
         }
-        // 可以发起添加石墨盘的网络请求
-        const { data: res } = await this.$http.post('graphite-disc/add', this.addForm)
-        if (res.status !== 200) {
-          return this.$message.error('添加石墨盘失败！')
-        }
-        this.$message.success('添加石墨盘成功！')
+        this.$message.success('石墨盘暂存中,请添加第一条清洗校验记录！')
+        // 将石墨盘编号存储到state中
+        this.$state.shimo = this.addForm
         // 隐藏添加石墨盘的对话框
         this.dialogVisible = false
-        // 重新获取石墨盘列表数据
-        this.getShiMoList()
+        // 跳转
+        await this.$router.push('/wash')
       })
     },
     shimoStateChanged (shimo) {

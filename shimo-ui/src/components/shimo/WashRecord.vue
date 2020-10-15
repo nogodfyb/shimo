@@ -97,8 +97,11 @@
     >
       <el-form :inline="true" :model="addForm" :rules="addFormRules" ref="addFormRef" >
         <el-row>
-          <el-form-item label="石墨盘编号" prop="code">
-            <el-input v-model="addForm.code" placeholder="石墨盘编号"></el-input>
+          <el-form-item label="石墨盘编号" prop="code" v-show="!firstAddMode">
+            <el-input v-model="addForm.code" placeholder="石墨盘编号" ></el-input>
+          </el-form-item>
+          <el-form-item label="石墨盘编号" v-show="firstAddMode">
+            <el-input v-model="addForm.code" placeholder="石墨盘编号" disabled></el-input>
           </el-form-item>
         </el-row>
         <el-row>
@@ -327,6 +330,7 @@ export default {
       addForm: {
 
       },
+      firstAddMode: false,
       washRecordList: [],
       addFormRules: {
         code: [
@@ -495,10 +499,15 @@ export default {
     }
   },
   created () {
+    if (this.$state.shimo.code !== undefined) {
+      this.firstAddMode = true
+      this.addDialogVisible = true
+    }
     if (window.screen.width < 1400) {
       this.height -= 120
     }
     this.getWashRecordList()
+    this.addForm.code = this.$state.shimo.code
   },
   methods: {
     async getWashRecordList () {
@@ -516,6 +525,9 @@ export default {
     },
     addDialogClosed () {
       this.$refs.addFormRef.resetFields()
+      this.firstAddMode = false
+      this.$state.shimo = {}
+      this.addForm = {}
     },
     async checkCodeExist (code) {
       const { data: res } = await this.$http.get('graphite-disc/check', { params: { code: code } })
@@ -536,12 +548,27 @@ export default {
         if (!valid) {
           return false
         }
-        // 可以发起添加清洗记录的网络请求
-        const { data: res } = await this.$http.post('wash-record/add', this.addForm)
-        if (res.status !== 200) {
-          return this.$message.error('添加清洗校验记录失败！')
+        // 如果是第一次添加
+        if (this.firstAddMode) {
+          // 添加石墨盘
+          const { data: res } = await this.$http.post('graphite-disc/add', this.$state.shimo)
+          if (res.status !== 200) {
+            return this.$message.error('添加石墨盘失败')
+          }
+          // 添加清洗记录
+          const { data: washRes } = await this.$http.post('wash-record/add', this.addForm)
+          if (washRes.status !== 200) {
+            return this.$message.error('添加清洗记录失败')
+          }
+          this.$message.success('添加石墨盘成功,并且添加了第一条清洗校验记录!')
+        } else {
+          // 可以发起添加清洗记录的网络请求
+          const { data: res } = await this.$http.post('wash-record/add', this.addForm)
+          if (res.status !== 200) {
+            return this.$message.error('添加清洗校验记录失败！')
+          }
+          this.$message.success('添加清洗校验记录成功！')
         }
-        this.$message.success('添加清洗校验记录成功！')
         // 隐藏添加清洗记录的对话框
         this.addDialogVisible = false
         await this.getWashRecordList()
