@@ -23,7 +23,7 @@ axios.interceptors.response.use(config => {
   return config
 })
 Vue.prototype.$http = axios
-Vue.prototype.$state = {}
+Vue.prototype.$state = { shimo: {} }
 Vue.config.productionTip = false
 
 new Vue({

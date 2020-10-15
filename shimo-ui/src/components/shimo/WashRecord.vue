@@ -14,7 +14,7 @@
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="addDialogVisible=true">录入清洗校验记录</el-button>
+          <el-button type="primary" @click="showAddDialog">录入清洗校验记录</el-button>
         </el-col>
         <el-col :span="2">
           <el-button type="info" @click="exportExcel">导出</el-button>
@@ -97,10 +97,10 @@
     >
       <el-form :inline="true" :model="addForm" :rules="addFormRules" ref="addFormRef" >
         <el-row>
-          <el-form-item label="石墨盘编号" prop="code" v-show="!firstAddMode">
-            <el-input v-model="addForm.code" placeholder="石墨盘编号" ></el-input>
+          <el-form-item label="石墨盘编号" prop="code" v-if="!firstAddMode">
+            <el-input v-model="addForm.code" placeholder="石墨盘编号"></el-input>
           </el-form-item>
-          <el-form-item label="石墨盘编号" v-show="firstAddMode">
+          <el-form-item label="石墨盘编号"  v-if="firstAddMode">
             <el-input v-model="addForm.code" placeholder="石墨盘编号" disabled></el-input>
           </el-form-item>
         </el-row>
@@ -247,6 +247,7 @@
 <script>
 import config from '../../util/config'
 export default {
+  inject: ['reload'],
   data () {
     // 验证编号的规则
     const checkCode = (rule, value, cb) => {
@@ -328,7 +329,7 @@ export default {
       },
       addDialogVisible: false,
       addForm: {
-
+        code: ''
       },
       firstAddMode: false,
       washRecordList: [],
@@ -523,11 +524,18 @@ export default {
       this.queryInfo.pageNum = 1
       this.getWashRecordList()
     },
+    showAddDialog () {
+      this.addDialogVisible = true
+    },
     addDialogClosed () {
       this.$refs.addFormRef.resetFields()
-      this.firstAddMode = false
+      // 当第一次添加清洗记录的模式取消时
+      if (this.firstAddMode) {
+        this.firstAddMode = false
+        window.sessionStorage.setItem('activePath', 'wash')
+        this.reload()
+      }
       this.$state.shimo = {}
-      this.addForm = {}
     },
     async checkCodeExist (code) {
       const { data: res } = await this.$http.get('graphite-disc/check', { params: { code: code } })
